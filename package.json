@@ -1,0 +1,29 @@
+{
+  "name": "event-booking-api",
+  "version": "1.0.0",
+  "description": "This is an Event Booking API. I have created this project to learn about GraphQL and how to integrate GraphQL with NodeJs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SahanAmarsha/event-booking-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SahanAmarsha/event-booking-api/issues"
+  },
+  "homepage": "https://github.com/SahanAmarsha/event-booking-api#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.11.0",
+    "graphql": "^15.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
