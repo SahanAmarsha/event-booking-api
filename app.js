@@ -3,8 +3,10 @@ const bodyParser = require('body-parser');
 const  graphqlHttp  = require('express-graphql').graphqlHTTP;
 const { buildSchema } = require('graphql');
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const Event = require('./models/event');
+const User = require('./models/user');
 
 const app = express();
 
@@ -23,11 +25,22 @@ app.use('/graphql', graphqlHttp({
             date: String!
         }
         
+        type User {
+            _id: ID!
+            email: String!
+            password: String
+        }
+        
         input EventInput {
             title: String!
             description: String!
             price: Float!
             date: String!
+        }
+        
+        input UserInput {
+            email: String!
+            password: String!
         }
         
         type RootQuery {
@@ -36,6 +49,7 @@ app.use('/graphql', graphqlHttp({
         
         type RootMutation {
             createEvent(eventInput: EventInput): Event
+            createUser(userInput: UserInput): User
         }
         
         schema {
@@ -74,6 +88,33 @@ app.use('/graphql', graphqlHttp({
                 console.log(err);
                 throw (err);
             });
+        },
+        createUser: (args) => {
+            return User.findOne({
+                email: args.userInput.email
+            }).then(user => {
+             if(user)
+             {
+                 throw new Error('User Exists already.')
+             }
+                return bcrypt.hash(args.userInput.password, 12)
+            })
+                .then(hashedPwd => {
+                    const user = new User({
+                        email: args.userInput.email,
+                        password: hashedPwd
+                    });
+
+                    return user.save();
+                })
+                .then(result => {
+                    console.log(result);
+                    return {...result._doc};
+                })
+                .catch(err => {
+                    throw err;
+                });
+
 
         }
 
