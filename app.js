@@ -78,25 +78,44 @@ app.use('/graphql', graphqlHttp({
                 title: args.eventInput.title,
                 description: args.eventInput.description,
                 price: +args.eventInput.price,
-                date: new Date(args.eventInput.date)
+                date: new Date(args.eventInput.date),
+                creator: '5f2af6ffabc7943244fcfd12'
             });
 
-            return event.save().then(result => {
-                console.log(result);
-                return{...result._doc};
-            }).catch(err => {
-                console.log(err);
-                throw (err);
-            });
+            let createdEvent;
+            return event
+                .save()
+                .then(result => {
+                    createdEvent = {...result._doc, _id: result._doc._id.toString};
+                    console.log(result);
+                    return User.findById('5f2af6ffabc7943244fcfd12');
+
+
+                })
+                .then(user => {
+                    if(!user)
+                    {
+                        throw new Error('User Does Not Exist.')
+                    }
+                    user.createdEvents.push(event)
+                })
+                .then(result => {
+
+                    return createdEvent;
+                })
+                .catch(err => {
+                    console.log(err);
+                    throw (err);
+                });
         },
         createUser: (args) => {
             return User.findOne({
                 email: args.userInput.email
             }).then(user => {
-             if(user)
-             {
-                 throw new Error('User Exists already.')
-             }
+                if(user)
+                {
+                    throw new Error('User Exists already.')
+                }
                 return bcrypt.hash(args.userInput.password, 12)
             })
                 .then(hashedPwd => {
